@@ -32,33 +32,40 @@ Este projeto tem como foco a **coleta automatizada de artigos acadêmicos** sobr
 ## **📂 Estrutura do Projeto**
 ```
 health-edu-apps-etl/
-├── health_edu_apps_etl/    # 📌 Módulo principal do pipeline
+├── health_edu_apps_etl/    # 📌 Módulo principal
 │   ├── __init__.py
-│   ├── config.py           # Configuração global (ex: número máximo de artigos)
-│   ├── etl_pipeline.py     # Orquestração completa do ETL
-│   ├── extract_articles.py # Extração de dados (PubMed, IEEE Xplore, etc.)
-│   ├── transform_data.py   # Limpeza e processamento de dados
-│   ├── analyze_data.py     # Estatísticas e insights sobre os artigos coletados
+│   ├── config.py           # Configuração global
+│   ├── etl_pipeline.py     # Orquestração do pipeline completo
+│   ├── extract_pubmed.py   # Extração específica da PubMed
+│   ├── extract_ieee.py     # Extração específica do IEEE Xplore
+│   ├── extract_scopus.py   # Extração específica do Scopus
+│   ├── extract_wos.py      # Extração específica do Web of Science
+│   ├── extract_scholar.py  # Extração específica do Google Scholar
+│   ├── extract_scielo.py   # Extração específica do SciELO
+│   ├── transform_data.py   # Processamento e limpeza de dados
 │   ├── utils.py            # Funções auxiliares
 │
-├── data/                   # 📂 Diretório para armazenar os datasets extraídos
-│   ├── raw/                # Dados brutos das fontes acadêmicas
-│   ├── processed/          # Dados tratados e prontos para análise
-│   ├── articles.parquet    # Dados salvos em formato otimizado
+├── data/                   # 📂 Diretório para armazenar os dados
+│   ├── raw/                # Dados brutos extraídos das fontes
+│   ├── processed/          # Dados tratados e organizados
+│   ├── articles.parquet    # Dados salvos no formato otimizado
 │   ├── articles.csv        # Dados exportados para fácil visualização
 │
-├── notebooks/              # 📂 Notebooks Jupyter para exploração inicial
+├── notebooks/              # 📂 Notebooks para exploração de dados
 │   ├── exploratory_analysis.ipynb
 │
-├── tests/                  # 📂 Testes unitários
+├── tests/                  # 📂 Testes automatizados
 │   ├── __init__.py
-│   ├── test_extract.py     # Testes para extração de dados
-│   ├── test_transform.py   # Testes para transformação de dados
+│   ├── test_pubmed_api.py  # Teste da API PubMed
+│   ├── test_ieee_api.py    # Teste da API IEEE Xplore
+│   ├── test_extract.py     # Testes gerais de extração
+│   ├── test_transform.py   # Testes de transformação
 │
-├── .env.example            # Exemplo de configuração de variáveis de ambiente
-├── .gitignore              # Arquivos ignorados no versionamento Git
+├── .env.example            # Exemplo de configuração de credenciais
+├── .gitignore              # Arquivos ignorados pelo Git
 ├── pyproject.toml          # Configuração do Poetry
-├── README.md               # 📄 Documentação principal do projeto
+├── README.md               # Documentação principal
+
 ```
 
 ---
