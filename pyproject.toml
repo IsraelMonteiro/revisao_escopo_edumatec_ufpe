@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "revisao_escopo_edumatec_ufpe"
+version = "0.1.0"
+description = "Realizacao de revisao de varios artigos"
+authors = ["Israel Monteiro <israel.santosmonteiro@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+pandas = "^2.2.3"
+numpy = "^2.2.3"
+matplotlib = "^3.10.0"
+apache-airflow = "^2.10.5"
+python-dotenv = "^1.0.1"
+polars = "^1.22.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

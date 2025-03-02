@@ -1,0 +1,13 @@
+[tool.poetry]
+name = "health-edu-apps-etl"
+version = "0.1.0"
+description = ""
+authors = ["IsraelMonteiro <Israel.santosmonteiro@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"  # Define a versão correta do Python
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
