@@ -1,17 +1,16 @@
 import os
 import requests
-import json
 import polars as pl
 from dotenv import load_dotenv
 
-# Carregar credenciais do arquivo .env
+# Carregar credenciais do .env
 load_dotenv()
 PUBMED_API_KEY = os.getenv("PUBMED_API_KEY")
 
-# Termos de busca (reduzido para teste)
 QUERY = '("mobile applications"[Title/Abstract] OR "health apps"[Title/Abstract]) AND ("data analysis"[Title/Abstract])'
 
 def fetch_pubmed_articles(query, max_results=10):
+    """ Extrai artigos da API PubMed e retorna um DataFrame """
     url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
     params = {
         "db": "pubmed",
@@ -22,23 +21,15 @@ def fetch_pubmed_articles(query, max_results=10):
     }
     
     response = requests.get(url, params=params)
-    
-    # 🚨 Depuração: Verificar resposta da API antes de tentar acessar "esearchresult"
-    try:
-        data = response.json()
-    except json.JSONDecodeError:
-        print("❌ Erro ao decodificar JSON! Resposta da API:", response.text)
-        return pl.DataFrame()
+    data = response.json()
 
-    # 🚨 Verificar se "esearchresult" está presente na resposta
     if "esearchresult" not in data:
-        print("❌ A resposta da API não contém 'esearchresult'. Resposta completa:", data)
+        print("❌ Erro na resposta da API PubMed:", data)
         return pl.DataFrame()
 
-    # Buscar detalhes dos artigos
     article_ids = data["esearchresult"]["idlist"]
     articles = []
-    
+
     for article_id in article_ids:
         article_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi"
         article_params = {"db": "pubmed", "id": article_id, "retmode": "json"}
@@ -58,13 +49,19 @@ def fetch_pubmed_articles(query, max_results=10):
 
     return pl.DataFrame(articles)
 
-
-# 🚀 Testar a função
 if __name__ == "__main__":
-    print("🔍 Testando extração da PubMed...")
+    print("🔍 Extraindo artigos da PubMed...")
     pubmed_data = fetch_pubmed_articles(QUERY)
-
+    
     if pubmed_data.is_empty():
-        print("❌ Nenhum dado retornado! Verifique a resposta da API.")
+        print("❌ Nenhum artigo retornado.")
     else:
-        print(f"✅ Extração bem-sucedida! {len(pubmed_data)} artigos coletados.")
+        # 📌 Garantir que o diretório "data/raw" existe
+        output_dir = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
+        os.makedirs(output_dir, exist_ok=True)  # Cria a pasta se não existir
+
+        # 📌 Caminho correto do arquivo de saída
+        output_file = os.path.join(output_dir, "pubmed_articles.csv")
+        pubmed_data.write_csv(output_file)
+        
+        print(f"✅ {len(pubmed_data)} artigos salvos em `{output_file}`.")
