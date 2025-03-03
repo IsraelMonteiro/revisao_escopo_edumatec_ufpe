@@ -1,6 +1,3 @@
-
----
-
 # **📊 Revisão de Escopo - EDUmatec UFPE**
 
 **🛠 Projeto:** `health-edu-apps-etl`  
@@ -32,39 +29,46 @@ Este projeto tem como foco a **coleta automatizada de artigos acadêmicos** sobr
 ## **📂 Estrutura do Projeto**
 ```
 health-edu-apps-etl/
-├── health_edu_apps_etl/    # 📌 Módulo principal
+├── health_edu_apps_etl/          # 📌 Módulo principal
 │   ├── __init__.py
-│   ├── config.py           # Configuração global
-│   ├── etl_pipeline.py     # Orquestração do pipeline completo
-│   ├── extract_pubmed.py   # Extração específica da PubMed
-│   ├── extract_ieee.py     # Extração específica do IEEE Xplore
-│   ├── extract_scopus.py   # Extração específica do Scopus
-│   ├── extract_wos.py      # Extração específica do Web of Science
-│   ├── extract_scholar.py  # Extração específica do Google Scholar
-│   ├── extract_scielo.py   # Extração específica do SciELO
-│   ├── transform_data.py   # Processamento e limpeza de dados
-│   ├── utils.py            # Funções auxiliares
+│   ├── config.py                 # Configuração global
+│   ├── etl_pipeline.py           # Orquestração do pipeline completo
+│   ├── extract_pubmed.py         # Extração da PubMed
+│   ├── extract_ieee.py           # Extração do IEEE Xplore
+│   ├── extract_scopus.py         # Extração do Scopus
+│   ├── extract_wos.py            # Extração do Web of Science
+│   ├── extract_scholar.py        # Extração do Google Scholar
+│   ├── extract_scielo.py         # Extração do SciELO
+│   ├── transform_data.py         # Processamento e limpeza de dados
+│   ├── generate_report.py        # Geração de relatórios (PDF/HTML)
+│   ├── dashboard.py              # Painel interativo para visualização
+│   ├── streamlit_app.py          # Interface completa do projeto
+│   ├── utils.py                  # Funções auxiliares
 │
-├── data/                   # 📂 Diretório para armazenar os dados
-│   ├── raw/                # Dados brutos extraídos das fontes
-│   ├── processed/          # Dados tratados e organizados
-│   ├── articles.parquet    # Dados salvos no formato otimizado
-│   ├── articles.csv        # Dados exportados para fácil visualização
+├── data/                         # 📂 Diretório para armazenar os dados
+│   ├── raw/                      # Dados brutos extraídos das fontes
+│   ├── processed/                # Dados tratados e organizados
+│   ├── articles.parquet          # Dados salvos no formato otimizado
+│   ├── articles.csv              # Dados exportados para fácil visualização
 │
-├── notebooks/              # 📂 Notebooks para exploração de dados
+├── notebooks/                    # 📂 Notebooks para exploração de dados
 │   ├── exploratory_analysis.ipynb
 │
-├── tests/                  # 📂 Testes automatizados
-│   ├── __init__.py
-│   ├── test_pubmed_api.py  # Teste da API PubMed
-│   ├── test_ieee_api.py    # Teste da API IEEE Xplore
-│   ├── test_extract.py     # Testes gerais de extração
-│   ├── test_transform.py   # Testes de transformação
+├── dags/                         # 📂 Diretório onde ficará a DAG do Airflow
+│   ├── dag_etl.py                # Pipeline de ETL agendado e monitorado no Airflow
 │
-├── .env.example            # Exemplo de configuração de credenciais
-├── .gitignore              # Arquivos ignorados pelo Git
-├── pyproject.toml          # Configuração do Poetry
-├── README.md               # Documentação principal
+├── tests/                        # 📂 Testes automatizados
+│   ├── __init__.py
+│   ├── test_pubmed_api.py        # Teste da API PubMed
+│   ├── test_ieee_api.py          # Teste da API IEEE Xplore
+│   ├── test_extract.py           # Testes gerais de extração
+│   ├── test_transform.py         # Testes de transformação
+│   ├── test_generate_report.py   # Testes da geração de relatórios
+│
+├── .env.example                  # Exemplo de configuração de credenciais
+├── .gitignore                    # Arquivos ignorados pelo Git
+├── pyproject.toml                 # Configuração do Poetry
+├── README.md                     # Documentação principal
 
 ```
 
@@ -98,12 +102,12 @@ IEEE_API_KEY=seu_token_aqui
 
 ### **4️⃣ Executar a Extração de Dados**
 ```bash
-python health-edu-apps-etl/health_edu_apps_etl/extract_articles.py
+python health-edu-apps-etl/health_edu_apps_etl/etl_pipeline.py
 ```
 
 ### **5️⃣ Rodar a Interface Streamlit**
 ```bash
-streamlit run health-edu-apps-etl/health_edu_apps_etl/analyze_data.py
+streamlit run health-edu-apps-etl/health_edu_apps_etl/streamlit_app.py
 ```
 
 ---
@@ -111,8 +115,9 @@ streamlit run health-edu-apps-etl/health_edu_apps_etl/analyze_data.py
 ## **🔍 Próximos Passos**
 ✅ Implementar a extração de dados via APIs (PubMed & IEEE Xplore)  
 ✅ Criar pipeline de limpeza e transformação de dados  
-🔄 Estruturar análise e visualização interativa  
+✅ Estruturar análise e visualização interativa  
 🚀 Automatizar todo o processo com Apache Airflow  
+📊 Criar relatórios automatizados em PDF e HTML  
 
 ---
 
@@ -125,5 +130,3 @@ Caso tenha sugestões ou queira contribuir com o projeto, sinta-se à vontade pa
 Este projeto é open-source sob a licença **MIT**.
 
 ---
-
-
