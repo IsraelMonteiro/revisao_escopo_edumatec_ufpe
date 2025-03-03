@@ -73,7 +73,7 @@ health-edu-apps-etl/
 ## **🚀 Como Rodar o Projeto**
 ### **1️⃣ Clonar o Repositório**
 ```bash
-git clone https://github.com/seu-usuario/revisao_escopo_edumatec_ufpe.git
+git clone https://github.com/IsraelMonteiro/revisao_escopo_edumatec_ufpe.git
 cd revisao_escopo_edumatec_ufpe
 ```
 
