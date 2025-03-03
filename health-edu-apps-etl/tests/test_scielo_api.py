@@ -1,9 +1,8 @@
 import os
 import requests
-import polars as pl
+import json
 import time
 from dotenv import load_dotenv
-from pathlib import Path
 
 # 🔹 Carregar variáveis de ambiente
 load_dotenv()
@@ -12,21 +11,12 @@ load_dotenv()
 BASE_URL = "http://articlemeta.scielo.org/api/v1/article/"
 COLLECTION = "scl"
 
-# 🔹 Lista de códigos de artigos para extração
+# 🔍 Lista de códigos de artigos para teste
 ARTICLE_CODES = [
     "S0103-40142005000200002",
     "S0103-40142005000200003",
     "S0103-40142005000200004"
 ]
-
-# 🔹 Diretório de saída
-BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
-RAW_DATA_DIR = DATA_DIR / "raw"
-RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-CSV_FILE = RAW_DATA_DIR / "scielo_articles.csv"
-PARQUET_FILE = RAW_DATA_DIR / "scielo_articles.parquet"
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -41,6 +31,10 @@ def fetch_scielo_article(article_code, retries=3, delay=5):
             response = requests.get(url, headers=HEADERS, timeout=10)
             response.raise_for_status()
             return response.json()  # Retorna JSON estruturado do artigo
+
+        except requests.JSONDecodeError:
+            print(f"❌ Erro ao decodificar JSON para {article_code}")
+            return None
 
         except requests.RequestException as e:
             print(f"⚠️ Erro na tentativa {attempt+1} para {article_code}: {e}")
@@ -68,7 +62,7 @@ def format_date(date_str):
 def process_article_data(article_data):
     """Extrai informações essenciais do artigo retornado pela API."""
     if not article_data:
-        return None
+        return "❌ Erro ao obter dados do artigo."
 
     article_info = article_data.get("article", {})
 
@@ -87,39 +81,28 @@ def process_article_data(article_data):
     if pub_date == "":
         pub_date = article_data.get("processing_date", "Data não encontrada")
 
-    return {
-        "title": title,
-        "journal": journal,
-        "authors": authors,
-        "publication_date": pub_date
-    }
+    return f"✅ {title} | {journal} | {authors} | {pub_date}"
 
-def extract_scielo_articles():
-    """Extrai artigos da SciELO e salva em CSV e Parquet."""
-    print("\n🔍 **Iniciando extração de artigos do SciELO...**\n")
+def test_scielo_api():
+    """Executa um teste de conexão e validação de artigos da SciELO."""
+    print("\n🔍 **Iniciando teste da API SciELO...**\n")
 
-    articles = []
+    results = []
     for code in ARTICLE_CODES:
         article_data = fetch_scielo_article(code)
-        processed_data = process_article_data(article_data)
-        if processed_data:
-            articles.append(processed_data)
 
-    if not articles:
-        print("❌ Nenhum artigo extraído.")
-        return
+        # 🔹 Exibe JSON formatado para depuração (se necessário)
+        # print(json.dumps(article_data, indent=2, ensure_ascii=False))
 
-    # 🔹 Criando DataFrame Polars
-    df = pl.DataFrame(articles)
+        if article_data:
+            results.append(process_article_data(article_data))
+        else:
+            results.append(f"❌ Erro ao obter dados do artigo {code}")
 
-    # 🔹 Salvando os dados
-    df.write_csv(CSV_FILE)
-    df.write_parquet(PARQUET_FILE)
+    print("\n📋 **Resultados do Teste**\n")
+    for res in results:
+        print(res)
 
-    print("\n✅ Extração concluída!")
-    print(f"📁 {len(articles)} artigos salvos em:")
-    print(f"   - CSV: {CSV_FILE}")
-    print(f"   - Parquet: {PARQUET_FILE}")
-
+# 🚀 Executar o teste
 if __name__ == "__main__":
-    extract_scielo_articles()
+    test_scielo_api()

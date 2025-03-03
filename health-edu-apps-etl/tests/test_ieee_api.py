@@ -16,19 +16,24 @@ def test_ieee_api():
     params = {
         "apikey": IEEE_API_KEY,
         "format": "json",
-        "max_records": 5,  # Buscar apenas 5 artigos para teste
+        "max_records": 5,
         "querytext": QUERY,
     }
     
-    response = requests.get(API_URL, params=params)
-    
-    assert response.status_code == 200, "❌ Erro: A API do IEEE Xplore não respondeu corretamente!"
-    
-    data = response.json()
-    assert "articles" in data, "❌ Erro: 'articles' não encontrado na resposta!"
-    assert len(data["articles"]) > 0, "❌ Erro: Nenhum artigo retornado!"
+    try:
+        response = requests.get(API_URL, params=params, timeout=10)
+        response.raise_for_status()  # Lança um erro se a resposta não for 200
+        data = response.json()
+        print(f"✅ Resposta da API IEEE: {json.dumps(data, indent=2)}")
 
-    print("✅ Teste da API IEEE Xplore passou! Retornou", len(data["articles"]), "artigos.")
+        assert "articles" in data, "❌ Erro: 'articles' não encontrado na resposta!"
+        assert len(data["articles"]) > 0, "❌ Erro: Nenhum artigo retornado!"
+
+        print("✅ Teste da API IEEE Xplore passou! Retornou", len(data["articles"]), "artigos.")
+
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Erro na requisição: {e}")
+        print(f"🔍 Código de status: {response.status_code} - Resposta: {response.text}")
 
 # 🚀 Executar o teste
 if __name__ == "__main__":

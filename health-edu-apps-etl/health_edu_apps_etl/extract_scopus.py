@@ -8,10 +8,10 @@ from pathlib import Path
 # 🔹 Carregar credenciais do .env
 load_dotenv()
 SCOPUS_API_KEY = os.getenv("SCOPUS_API_KEY")
-MAX_RESULTS = int(os.getenv("SCOPUS_MAX_RESULTS", 50))
+MAX_RESULTS = int(os.getenv("SCOPUS_MAX_RESULTS", 10))  # Reduzir para 10 artigos para testar
 
-# 🔹 Estratégia de busca
-QUERY = 'TITLE-ABS-KEY(("mobile applications" OR "health apps") AND ("data analysis"))'
+# 🔹 Ajuste na estratégia de busca
+QUERY = 'TITLE-ABS-KEY("mobile applications" OR "health apps" AND "data analysis")'
 
 # 🔹 Diretório de saída
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +24,10 @@ def fetch_scopus_articles(query, max_results=MAX_RESULTS, retries=3, delay=5):
     """Extrai artigos da API Scopus"""
     
     url = "https://api.elsevier.com/content/search/scopus"
-    headers = {"X-ELS-APIKey": SCOPUS_API_KEY}
+    headers = {
+        "X-ELS-APIKey": SCOPUS_API_KEY,
+        "Accept": "application/json"  # 🔹 Adiciona cabeçalho Accept
+    }
     params = {
         "query": query,
         "count": max_results,
@@ -35,6 +38,9 @@ def fetch_scopus_articles(query, max_results=MAX_RESULTS, retries=3, delay=5):
     for attempt in range(retries):
         try:
             response = requests.get(url, headers=headers, params=params, timeout=10)
+            if response.status_code == 401:
+                print("❌ Erro: API Key inválida ou não autorizada.")
+                return []
             response.raise_for_status()
             data = response.json()
 
@@ -43,7 +49,7 @@ def fetch_scopus_articles(query, max_results=MAX_RESULTS, retries=3, delay=5):
                 time.sleep(delay)
                 continue
             
-            return data["search-results"]["entry"]
+            return data["search-results"].get("entry", [])
 
         except requests.RequestException as e:
             print(f"⚠️ Erro na tentativa {attempt+1}: {e}")
